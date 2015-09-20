@@ -73,23 +73,34 @@ exports.delete = function(req, res) {
  */
 function validateAddress(address) {
   var template = {
-    surname: '',
-    firstname: '',
-    phone_number: '',
-    address: ''
-  }
-
-  var isEmpty = true;
-  for(var key in address) {
-    isEmpty = false;
-    if (template[key] === undefined) {
-      return new Error('Address object failed validation: ' + key + ' is not a valid phone book entry');
-    } else if (typeof address[key] !== typeof template[key]) {
-      return new Error('Address object failed validation: ' + key + ' is not of expected type ' + typeof template[key]);
+    surname: {
+      required: true,
+      type: ''
+    },
+    firstname: {
+      required: true,
+      type: ''
+    },
+    phone_number: {
+      required: true,
+      type: ''
+    },
+    address: {
+      type: ''
     }
   }
-  if (isEmpty) {
-    return new Error('Empty address object');
+
+  for(var key in address) {
+    if (template[key] === undefined) {
+      return new Error('Address object failed validation: ' + key + ' is not a valid phone book entry');
+    } else if (typeof address[key] !== typeof template[key].type) {
+      return new Error('Address object failed validation: ' + key + ' is not of expected type ' + typeof template[key].type);
+    }
+  }
+  for(var key in template) {
+    if (template[key].required && address[key] === undefined) {
+      return new Error('Address object is missing ' + key);
+    }
   }
 
   return;
